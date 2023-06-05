@@ -60,7 +60,6 @@ def mail(text, tipo):
         msg_p = MIMEImage('image.jpg')
         msg_p.add_header('Content-Disposition', 'attachment', filename='image.jpg')
     elif tipo == 'adj':
-        #print('envio--'+text)
         msg.attach(MIMEText('Encontrada la hoja de datos del: '+text, 'html'))#plain
         msg_p = MIMEApplication(open(text, 'rb').read())
         msg_p.add_header('Content-Disposition', 'attachment', filename=text)
@@ -71,11 +70,6 @@ def mail(text, tipo):
         msg_p = MIMEApplication(pdf_data, Name=text)
         msg_p['Content-Disposition'] = f'attachment; filename={text}'
         
-        #msg.attach(MIMEText('Encontrada la hoja de datos del: '+text, 'html'))#plain
-        #msg_p = MIMEBase('application', "octet-stream")
-        #msg_p.set_payload(text)
-        #encoders.encode_base64(msg_p)
-        #msg_p.add_header('Content-Disposition', 'attachment', filename=text)
     msg.attach(msg_p)
     s.sendmail(radr, cliente, msg.as_string())
     s.close()
@@ -131,12 +125,10 @@ def analyze_msg(raws, a):
                 cmds.append('?')
                 return cmds
 
-
-imap_init()
-#smtp_init()
-print(f'Bot iniciado en ({radr})')
-
-
+if __name__ == '__main__':
+    imap_init()
+    print(f'Bot iniciado en ({radr})')
+    
 
 while True:  # Revicion constante
     print('En espera...')
@@ -172,17 +164,14 @@ while True:  # Revicion constante
                     smtp_init()
                     mail(salida[0], salida[1])
 
-                    #print(salida)
     except OSError as e:
-        print('Re intento de conexion en breve')
-        print("Se produjo un error de tipo:", type(e).__name__)
+        print("Error de tipo:", type(e).__name__)
         time.sleep(30)
         imap_init()
         continue
     except smtplib.SMTPServerDisconnected:
-        print('Ocurrio una desconexion')
         print("Re intento de conexion en breve")
         time.sleep(30)
         imap_init()
-        #smtp_init()
         continue
+    
